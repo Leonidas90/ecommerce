@@ -1,10 +1,10 @@
 package com.example.ecommerce.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Entity
@@ -16,8 +16,13 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String address;
     private String password;
-    private String status;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="userid")
+    private List<Address> addresses = new ArrayList<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name="userid")
+    private List<Payment> payments = new ArrayList<>();
 
 }

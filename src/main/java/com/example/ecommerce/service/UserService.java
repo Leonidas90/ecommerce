@@ -9,27 +9,27 @@ import com.example.ecommerce.entity.User;
 import com.example.ecommerce.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
-    private final UserRepository repository;
-    private final SignUpDtoToEntityConverter converter;
+    private final UserRepository usersRepository;
+    private final SignUpDtoToEntityConverter usersConverter;
 
-    public UserService(UserRepository repository, SignUpDtoToEntityConverter converter) {
-        this.repository = repository;
-        this.converter = converter;
+    public UserService(UserRepository usersRepository, SignUpDtoToEntityConverter usersConverter) {
+        this.usersRepository = usersRepository;
+        this.usersConverter = usersConverter;
     }
 
     public SignInResponseDto signIn(SignInDto dto){
-        List<User> users = repository.findByEmail(dto.email());
+        Optional<User> users = usersRepository.findByEmail(dto.email());
         if (users.isEmpty()){
             return new SignInResponseDto("failed");
         }
 
         SignInResponseDto response;
-        if (users.get(0).getPassword().equals(dto.password())){
+        if (users.get().getPassword().equals(dto.password())){
             response = new SignInResponseDto("success");
         }
         else{
@@ -40,13 +40,13 @@ public class UserService {
     }
 
     public SignUpResponseDto signUp(SignUpDto dto){
-        List<User> users = repository.findByEmail(dto.email());
-        if (!users.isEmpty()){
+        Optional<User> users = usersRepository.findByEmail(dto.email());
+        if (users.isPresent()){
             return new SignUpResponseDto("failed");
         }
 
         try {
-            repository.save(converter.convert(dto));
+            User user = usersRepository.save(usersConverter.convert(dto));
         }
         catch (Exception e){
             return new SignUpResponseDto("failed");
