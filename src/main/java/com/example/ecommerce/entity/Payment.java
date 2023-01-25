@@ -11,9 +11,8 @@ public class Payment {
     @GeneratedValue
     private Long id;
     private String type;
-    private String account_number;
+    private String accountNumber;
 
-    @ManyToOne
-    @JoinColumn(name="userid", updatable = true, insertable = true)
+    @OneToOne(mappedBy = "payment")
     private User user;
 }

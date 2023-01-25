@@ -16,20 +16,17 @@ public class Product {
     String name;
     String description;
     Double price;
+    Integer unitsInStock;
 
     @ManyToOne
     @JoinColumn(name="discountId", updatable = true, insertable = true)
     private Discount discount;
 
-    @OneToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="categoryId", updatable = true, insertable = true)
     private Category category;
 
-    @OneToOne
-    @JoinColumn(name="inventoryId", updatable = true, insertable = true)
-    private Inventory inventory;
-
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="productId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="product")
+    //@JoinColumn(name="productId")
     private List<Opinion> opinions = new ArrayList<>();
 }

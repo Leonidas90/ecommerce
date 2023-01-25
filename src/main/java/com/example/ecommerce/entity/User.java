@@ -3,9 +3,6 @@ package com.example.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
 @Entity
 @Table(name="users")
@@ -18,11 +15,11 @@ public class User {
     private String email;
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="userid")
-    private List<Address> addresses = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="userid")
-    private List<Payment> payments = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="address_id", referencedColumnName = "id", updatable = true, insertable = true)
+    private Address address;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name="payment_id", referencedColumnName = "id", updatable = true, insertable = true)
+    private Payment payment;
 }

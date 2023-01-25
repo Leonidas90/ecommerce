@@ -15,7 +15,6 @@ public class Address {
     private String country;
     private String telephone;
 
-    @ManyToOne
-    @JoinColumn(name="userid", updatable = true, insertable = true)
+    @OneToOne(mappedBy = "address")
     private User user;
 }

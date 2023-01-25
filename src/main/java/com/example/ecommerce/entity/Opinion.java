@@ -11,6 +11,7 @@ public class Opinion {
     @GeneratedValue
     private Long id;
     private String text;
+    private Integer mark;
 
     @ManyToOne
     @JoinColumn(name="productId", updatable = true, insertable = true)
