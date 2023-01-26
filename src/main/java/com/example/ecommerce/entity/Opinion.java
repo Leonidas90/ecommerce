@@ -13,7 +13,7 @@ public class Opinion {
     private String text;
     private Integer mark;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="productId", updatable = true, insertable = true)
     private Product product;
 }

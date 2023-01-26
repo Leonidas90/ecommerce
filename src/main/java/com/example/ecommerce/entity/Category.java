@@ -16,7 +16,6 @@ public class Category {
     private String name;
     private String description;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name="categoryId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="category", orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
 }

@@ -1,12 +1,11 @@
 package com.example.ecommerce.controller;
 
-import com.example.ecommerce.dto.product.AddProductDto;
-import com.example.ecommerce.dto.product.ProductFromCategoryDTO;
+import com.example.ecommerce.dto.opinion.OpinionDtoRequest;
+import com.example.ecommerce.dto.opinion.OpinionDtoResponse;
 import com.example.ecommerce.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,14 +19,13 @@ public class ProductController {
         this.service = service;
     }
 
-    @GetMapping("{category}")
-    public List<ProductFromCategoryDTO> getFromCategory(@RequestParam String category){
-        List<ProductFromCategoryDTO> pr = new ArrayList<>();
-        return pr;
+    @PostMapping("addOpinion")
+    public String addOpinion(@RequestBody OpinionDtoRequest dto){
+        return service.addOpinion(dto);
     }
 
-    @PostMapping("add")
-    public void add(@RequestBody AddProductDto dto){
-        service.addProduct(dto);
+    @GetMapping("getOpinion")
+    public List<OpinionDtoResponse> getOpinion(@RequestParam Long productId){
+        return service.getOpinionsForProduct(productId);
     }
 }

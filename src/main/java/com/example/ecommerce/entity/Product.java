@@ -13,20 +13,19 @@ public class Product {
     @Id
     @GeneratedValue
     private Long Id;
-    String name;
-    String description;
-    Double price;
-    Integer unitsInStock;
+    private String name;
+    private String description;
+    private Double price;
+    private Integer unitsInStock;
 
     @ManyToOne
     @JoinColumn(name="discountId", updatable = true, insertable = true)
     private Discount discount;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="categoryId", updatable = true, insertable = true)
     private Category category;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="product")
-    //@JoinColumn(name="productId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="product", orphanRemoval = true)
     private List<Opinion> opinions = new ArrayList<>();
 }
