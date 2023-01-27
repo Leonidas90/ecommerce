@@ -25,7 +25,7 @@ public class ProductController {
     }
 
     @GetMapping("getOpinion")
-    public List<OpinionDtoResponse> getOpinion(@RequestParam Long productId){
+    public List<OpinionDtoResponse> getOpinion(@RequestParam String productId){
         return service.getOpinionsForProduct(productId);
     }
 }

@@ -22,4 +22,13 @@ public class User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="payment_id", referencedColumnName = "id", updatable = true, insertable = true)
     private Payment payment;
+
+    public void initSession(){
+        shoppingSession = new ShoppingSession();
+        shoppingSession.setTotal((double) 0);
+        shoppingSession.setUser(this);
+    }
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
+    private ShoppingSession shoppingSession;
 }

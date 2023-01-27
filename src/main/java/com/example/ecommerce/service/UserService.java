@@ -39,15 +39,14 @@ public class UserService {
         this.paymentConverter = paymentConverter;
     }
 
-    public void signIn(SignInDto dto){
-        Optional<User> users = usersRepository.findByEmail(dto.email());
-        if (users.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "email doesn't exist");
-        }
+    public SignInResponseDto signIn(SignInDto dto){
+        User user = getUser((dto.email()));
 
-        if (!users.get().getPassword().equals(dto.password())){
+        if (!user.getPassword().equals(dto.password())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong password");
         }
+
+        return new SignInResponseDto(user.getId());
     }
 
     public void signUp(SignUpDto dto){
@@ -59,6 +58,7 @@ public class UserService {
         User user = usersConverter.convert(dto);
         user.setAddress(getAddress(dto));
         user.setPayment(getPayment(dto));
+        user.initSession();
         usersRepository.save(user);
     }
 
@@ -70,6 +70,10 @@ public class UserService {
     private Payment getPayment(SignUpDto dto){
         Optional<Payment> payment = paymentService.findPayment(dto.payment().type(), dto.payment().accountNumber());
         return (payment.isPresent() ? payment.get() : paymentConverter.convert(dto));
+    }
+
+    private User getUser(String email){
+        return usersRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
     }
 
 }

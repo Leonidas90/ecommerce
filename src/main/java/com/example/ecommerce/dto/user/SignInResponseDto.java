@@ -1,4 +1,4 @@
 package com.example.ecommerce.dto.user;
 
-public record SignInResponseDto(String status) {
+public record SignInResponseDto(Long userId) {
 }
