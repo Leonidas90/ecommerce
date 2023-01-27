@@ -12,7 +12,9 @@ import com.example.ecommerce.entity.Payment;
 import com.example.ecommerce.entity.User;
 import com.example.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -37,40 +39,27 @@ public class UserService {
         this.paymentConverter = paymentConverter;
     }
 
-    public SignInResponseDto signIn(SignInDto dto){
+    public void signIn(SignInDto dto){
         Optional<User> users = usersRepository.findByEmail(dto.email());
         if (users.isEmpty()){
-            return new SignInResponseDto("failed");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "email doesn't exist");
         }
 
-        SignInResponseDto response;
-        if (users.get().getPassword().equals(dto.password())){
-            response = new SignInResponseDto("success");
+        if (!users.get().getPassword().equals(dto.password())){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong password");
         }
-        else{
-            response = new SignInResponseDto("failed");
-        }
-
-        return response;
     }
 
-    public SignUpResponseDto signUp(SignUpDto dto){
+    public void signUp(SignUpDto dto){
         Optional<User> users = usersRepository.findByEmail(dto.email());
         if (users.isPresent()){
-            return new SignUpResponseDto("email already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "email already exist");
         }
 
-        try {
-            User user = usersConverter.convert(dto);
-            user.setAddress(getAddress(dto));
-            user.setPayment(getPayment(dto));
-            usersRepository.save(user);
-        }
-        catch (Exception e){
-            return new SignUpResponseDto("failed");
-        }
-
-        return new SignUpResponseDto("success");
+        User user = usersConverter.convert(dto);
+        user.setAddress(getAddress(dto));
+        user.setPayment(getPayment(dto));
+        usersRepository.save(user);
     }
 
     private Address getAddress(SignUpDto dto){

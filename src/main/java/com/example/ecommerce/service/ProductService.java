@@ -11,11 +11,14 @@ import com.example.ecommerce.entity.Opinion;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.repository.CategoryRepository;
 import com.example.ecommerce.repository.ProductRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductService {
@@ -53,35 +56,34 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public String addOpinion(OpinionDtoRequest dto){
-        System.out.println(dto.prodId());
-        Optional<Product> productOptional = getProduct(Long.parseLong(dto.prodId()));
-        if (productOptional.isPresent()){
-            Product product = productOptional.get();
+    public void addOpinion(OpinionDtoRequest dto){
+        try {
+            Long id = Long.parseLong(dto.prodId());
+            Product product = getProduct(id);
             Opinion opinion = opinionDtoToEntity.convert(dto);
-            product.getOpinions().add(opinion);
-            opinion.setProduct(product);
+            product.addOpinion(opinion);
             productRepository.save(product);
-            return "success";
         }
-        else {
-            return "fail";
+        catch (NumberFormatException e){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "invalid product ID");
         }
     }
 
     public List<OpinionDtoResponse> getOpinionsForProduct(Long productId){
-        List<OpinionDtoResponse> opinions = new ArrayList<>();
-        Optional<Product> product = getProduct(productId);
-        if (product.isPresent()){
-            product.get().getOpinions().stream().forEach((entity) -> {
-                opinions.add(new OpinionDtoResponse(entity.getText(), entity.getMark()));
-            });
-        }
+
+        Product product = getProduct(productId);
+        List<OpinionDtoResponse> opinions = product.getOpinions()
+                .stream()
+                .map(opinion -> {
+                    return new OpinionDtoResponse(opinion.getText(), opinion.getMark());
+                })
+                .collect(Collectors.toList());
 
         return opinions;
     }
 
-    Optional<Product> getProduct(Long productId){
-        return productRepository.findById(productId);
+    Product getProduct(Long productId){
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "product not found"));
     }
 }

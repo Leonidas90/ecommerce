@@ -20,8 +20,8 @@ public class ProductController {
     }
 
     @PostMapping("addOpinion")
-    public String addOpinion(@RequestBody OpinionDtoRequest dto){
-        return service.addOpinion(dto);
+    public void addOpinion(@RequestBody OpinionDtoRequest dto){
+        service.addOpinion(dto);
     }
 
     @GetMapping("getOpinion")

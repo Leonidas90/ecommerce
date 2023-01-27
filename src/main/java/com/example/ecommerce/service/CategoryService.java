@@ -12,11 +12,14 @@ import com.example.ecommerce.dto.product.ProductDTO;
 import com.example.ecommerce.entity.Category;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.repository.CategoryRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -35,48 +38,34 @@ public class CategoryService {
         this.entityToDtoConverter = entityToDtoConverter;
     }
 
-    public CategoryCreateResponseDto create(CategoryDto dto){
+    public void create(CategoryDto dto){
         Optional<Category> category = categoryRepository.findByName(dto.name());
         if (category.isPresent()){
-            return new CategoryCreateResponseDto("category already exist");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "category already exist");
         }
         categoryRepository.save(dtoToEntityConverter.convert(dto));
-        return new CategoryCreateResponseDto("success");
     }
 
-    public String addProduct(AddProductDto dto){
-        Optional<Category> category = categoryRepository.findByName(dto.category());
-        if (category.isEmpty()){
-            return "Category " + dto.category() + " doesn't exist";
-        }
-
-        List<Product> products = category.get().getProducts();
-        Product existed = products.stream()
-                .filter(prod -> prod.getName().equals(dto.name()) && prod.getDescription().equals(dto.description()))
-                .findAny()
-                .orElse(null);
-
-        if (existed != null){
-            return "product already exist";
+    public void addProduct(AddProductDto dto){
+        Category category = getCategory(dto.category());
+        if (checkIfProductExist(dto, category)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "product already exist");
         }
 
         Product product = productDtoToEntity.convert(dto);
-        product.setCategory(category.get());
-        category.get().getProducts().add(product);
-        categoryRepository.save(category.get());
-        return "success";
+        category.addProduct(product);
+        categoryRepository.save(category);
     }
 
     public List<ProductDTO> getProductsFromCategory(String categoryName){
-        List<ProductDTO> products = new ArrayList<>();
         Optional<Category> category = categoryRepository.findByName(categoryName);
         if (category.isEmpty()){
-            return products;
+            return new ArrayList<>();
         }
 
-        category.get().getProducts().stream().forEach((product) -> {
-            products.add(productEntitytoDto.convert(product));
-        });
+        List<ProductDTO> products = category.get().getProducts().stream()
+                .map((product -> productEntitytoDto.convert(product)))
+                .collect(Collectors.toList());
 
         return products;
     }
@@ -85,5 +74,20 @@ public class CategoryService {
         List<CategoryDto> result = new ArrayList<>();
         categoryRepository.findAll().stream().forEach((entity) -> result.add(entityToDtoConverter.convert(entity)));
         return new CategoryListResponseDto(result);
+    }
+
+    private boolean checkIfProductExist(AddProductDto dto, Category category){
+        List<Product> products = category.getProducts();
+        Product existed = products.stream()
+                .filter(prod -> prod.getName().equals(dto.name()) && prod.getDescription().equals(dto.description()))
+                .findAny()
+                .orElse(null);
+
+        return (existed != null);
+    }
+
+    private Category getCategory(String name){
+        return categoryRepository.findByName(name)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "category not found"));
     }
 }

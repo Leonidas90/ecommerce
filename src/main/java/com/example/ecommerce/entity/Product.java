@@ -28,4 +28,9 @@ public class Product {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="product", orphanRemoval = true)
     private List<Opinion> opinions = new ArrayList<>();
+
+    public void addOpinion(Opinion opinion){
+        this.opinions.add(opinion);
+        opinion.setProduct(this);
+    }
 }

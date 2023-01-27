@@ -18,4 +18,9 @@ public class Category {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="category", orphanRemoval = true)
     private List<Product> products = new ArrayList<>();
+
+    public void addProduct(Product product){
+        this.products.add(product);
+        product.setCategory(this);
+    }
 }

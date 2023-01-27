@@ -19,13 +19,13 @@ public class CategoryController {
     CategoryService service;
 
     @GetMapping("list")
-    CategoryListResponseDto list(){
+    public CategoryListResponseDto list(){
         return service.getAll();
     }
 
     @PostMapping("create")
-    CategoryCreateResponseDto create(@RequestParam String name, @RequestParam String desc){
-        return service.create(new CategoryDto(name, desc));
+    public void create(@RequestParam String name, @RequestParam String desc){
+        service.create(new CategoryDto(name, desc));
     }
 
     @GetMapping("products")
@@ -34,7 +34,7 @@ public class CategoryController {
     }
 
     @PostMapping("addProduct")
-    String addProduct(@RequestBody AddProductDto dto){
-        return service.addProduct(dto);
+    public void addProduct(@RequestBody AddProductDto dto){
+        service.addProduct(dto);
     }
 }
