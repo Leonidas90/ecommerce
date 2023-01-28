@@ -58,8 +58,7 @@ public class ProductService {
 
     public void addOpinion(OpinionDtoRequest dto){
         try {
-            Long id = Long.parseLong(dto.prodId());
-            Product product = getProduct(id);
+            Product product = getProduct(dto.prodId());
             Opinion opinion = opinionDtoToEntity.convert(dto);
             product.addOpinion(opinion);
             productRepository.save(product);
@@ -69,7 +68,7 @@ public class ProductService {
         }
     }
 
-    public List<OpinionDtoResponse> getOpinionsForProduct(Long productId){
+    public List<OpinionDtoResponse> getOpinionsForProduct(String productId){
 
         Product product = getProduct(productId);
         List<OpinionDtoResponse> opinions = product.getOpinions()
@@ -82,8 +81,14 @@ public class ProductService {
         return opinions;
     }
 
-    Product getProduct(Long productId){
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "product not found"));
+    Product getProduct(String productId){
+        try {
+            Long id = Long.parseLong(productId);
+            return productRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "product not found"));
+        }
+        catch (NumberFormatException e){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid product id");
+        }
     }
 }

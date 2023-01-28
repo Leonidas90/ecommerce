@@ -39,15 +39,14 @@ public class UserService {
         this.paymentConverter = paymentConverter;
     }
 
-    public void signIn(SignInDto dto){
-        Optional<User> users = usersRepository.findByEmail(dto.email());
-        if (users.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "email doesn't exist");
-        }
+    public SignInResponseDto signIn(SignInDto dto){
+        User user = getUserByEmail((dto.email()));
 
-        if (!users.get().getPassword().equals(dto.password())){
+        if (!user.getPassword().equals(dto.password())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong password");
         }
+
+        return new SignInResponseDto(user.getId());
     }
 
     public void signUp(SignUpDto dto){
@@ -62,6 +61,23 @@ public class UserService {
         usersRepository.save(user);
     }
 
+    public User getUser(String id){
+        try {
+            Long userId = Long.parseLong(id);
+            return  usersRepository
+                    .findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        }
+        catch (NumberFormatException e){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid product id");
+        }
+    }
+
+    public User createGuestUser(){
+        User user = new User();
+        return usersRepository.save(user);
+    }
+
     private Address getAddress(SignUpDto dto){
         Optional<Address> address = addressService.findAddress(dto.address().address(), dto.address().city(), dto.address().telephone());
         return (address.isPresent() ? address.get() : addressConverter.convert(dto));
@@ -70,6 +86,10 @@ public class UserService {
     private Payment getPayment(SignUpDto dto){
         Optional<Payment> payment = paymentService.findPayment(dto.payment().type(), dto.payment().accountNumber());
         return (payment.isPresent() ? payment.get() : paymentConverter.convert(dto));
+    }
+
+    private User getUserByEmail(String email){
+        return usersRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue
-    private Long Id;
+    private Long id;
     private String name;
     private String description;
     private Double price;
@@ -28,6 +28,9 @@ public class Product {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="product", orphanRemoval = true)
     private List<Opinion> opinions = new ArrayList<>();
+
+    @OneToOne(mappedBy = "product")
+    private CartItem cartItem;
 
     public void addOpinion(Opinion opinion){
         this.opinions.add(opinion);
