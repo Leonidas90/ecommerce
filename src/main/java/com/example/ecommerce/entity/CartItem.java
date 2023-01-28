@@ -13,10 +13,10 @@ public class CartItem {
     private Integer quantity;
 
     @OneToOne
-    @JoinColumn(name="product_id", referencedColumnName = "id", insertable=true, updatable=true)
+    @JoinColumn(name="product_id", referencedColumnName = "id")
     private Product product;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name="session_id", updatable = true, insertable = true)
     private ShoppingSession session;
 }

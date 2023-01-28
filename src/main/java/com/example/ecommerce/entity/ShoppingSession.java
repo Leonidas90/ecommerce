@@ -16,41 +16,42 @@ public class ShoppingSession {
     @Id
     @GeneratedValue
     private Long id;
-    private Double total;
 
     @OneToOne
-    @JoinColumn(name="userId", referencedColumnName = "id", updatable = true, insertable = true)
+    @JoinColumn(name="userId", referencedColumnName = "id", updatable = false, insertable = true)
     private User user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="session", orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
 
-    public CartItem addProduct(Product product, Integer quantity){
-        CartItem item = new CartItem();
-        item.setProduct(product);
-        item.setQuantity(quantity);
-        item.setSession(this);
-        items.add(item);
-        this.total = calculateTotal();
-        return item;
+    public void addProduct(Product product, Integer quantity){
+        if (isProductPresent(product)){
+            CartItem item = getItem(product);
+            item.setQuantity(quantity + item.getQuantity());
+        }
+        else{
+            CartItem item = new CartItem();
+            item.setProduct(product);
+            item.setQuantity(quantity);
+            item.setSession(this);
+            items.add(item);
+        }
     }
 
-    public void removeItem(CartItem item){
-        items.remove(item);
+    public void removeItem(Product product){
+        items.remove(getItem(product));
     }
 
-    public CartItem getItem(Product product){
-        Optional<CartItem> item = items.stream().filter(obj -> obj.getId() == product.getId()).findFirst();
+    private CartItem getItem(Product product){
+        Optional<CartItem> item = items.stream().filter(obj -> obj.getProduct().getId() == product.getId()).findFirst();
         if (item.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "product not found");
         }
         return item.get();
     }
 
-    private Double calculateTotal(){
-        Double sum = items.stream()
-                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
-                .sum();
-        return sum;
+    private boolean isProductPresent(Product product){
+        return items.stream().filter(obj -> obj.getProduct().getId() == product.getId()).findFirst().isPresent();
     }
+
 }

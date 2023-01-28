@@ -40,7 +40,7 @@ public class UserService {
     }
 
     public SignInResponseDto signIn(SignInDto dto){
-        User user = getUser((dto.email()));
+        User user = getUserByEmail((dto.email()));
 
         if (!user.getPassword().equals(dto.password())){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "wrong password");
@@ -58,8 +58,19 @@ public class UserService {
         User user = usersConverter.convert(dto);
         user.setAddress(getAddress(dto));
         user.setPayment(getPayment(dto));
-        user.initSession();
         usersRepository.save(user);
+    }
+
+    public User getUser(String id){
+        try {
+            Long userId = Long.parseLong(id);
+            return  usersRepository
+                    .findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
+        }
+        catch (NumberFormatException e){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid product id");
+        }
     }
 
     private Address getAddress(SignUpDto dto){
@@ -72,7 +83,7 @@ public class UserService {
         return (payment.isPresent() ? payment.get() : paymentConverter.convert(dto));
     }
 
-    private User getUser(String email){
+    private User getUserByEmail(String email){
         return usersRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found"));
     }
 
