@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +15,6 @@ public class ShoppingSession {
     @Id
     @GeneratedValue
     private Long id;
-
-    @OneToOne
-    @JoinColumn(name="userId", referencedColumnName = "id", updatable = false, insertable = true)
-    private User user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="session", orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();

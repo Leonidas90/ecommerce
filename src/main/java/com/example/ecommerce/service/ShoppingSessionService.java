@@ -1,7 +1,6 @@
 package com.example.ecommerce.service;
 
-import com.example.ecommerce.dto.shopping.PutItemIntoBoxDto;
-import com.example.ecommerce.dto.shopping.RemoveItemFromBoxDto;
+import com.example.ecommerce.dto.shopping.*;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.entity.ShoppingSession;
 import com.example.ecommerce.entity.User;
@@ -11,7 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShoppingSessionService {
@@ -28,11 +28,7 @@ public class ShoppingSessionService {
 
     @Transactional
     public void addProduct(PutItemIntoBoxDto dto) {
-        ShoppingSession session = getSession(dto.userid());
-        if (session.getUser() == null){
-            User user = userService.getUser(dto.userid());
-            session.setUser(user);
-        }
+        ShoppingSession session = getSession(dto.basketid());
         Product product = productService.getProduct(dto.productid());
         session.addProduct(product, dto.quantity());
         sessionRepository.save(session);
@@ -40,26 +36,41 @@ public class ShoppingSessionService {
 
     @Transactional
     public void removeProduct(RemoveItemFromBoxDto dto){
-        ShoppingSession session = getSession(dto.userid());
+        ShoppingSession session = getSession(dto.basketid());
         Product product = productService.getProduct(dto.productid());
         session.removeItem(product);
         sessionRepository.save(session);
     }
 
-    private ShoppingSession getSession(String userId){
+    public InitBasketResponse initBasket(InitBasketDto dto){
+        ShoppingSession session = new ShoppingSession();
+        Product product = productService.getProduct(dto.productid());
+        session.addProduct(product, dto.quantity());
+        ShoppingSession entity = sessionRepository.save(session);
+        return new InitBasketResponse(entity.getId().toString());
+    }
+
+    public List<ItemFromBox> getProductsFromBasket(String basketid){
+        ShoppingSession session = getSession(basketid);
+        List<ItemFromBox> products = session.getItems().stream().map((item) -> {
+            return new ItemFromBox(
+                    item.getProduct().getName(),
+                    item.getProduct().getPrice(),
+                    item.getQuantity());
+        }).collect(Collectors.toList());
+        return products;
+    }
+
+    private ShoppingSession getSession(String basketId){
         try {
-            Optional<ShoppingSession> session = sessionRepository.findByUserId(Long.parseLong(userId));
-            if (session.isPresent()){
-                return session.get();
-            }
-            else
-            {
-                ShoppingSession newSession = new ShoppingSession();
-                return newSession;
-            }
+            ShoppingSession session = sessionRepository.
+                    findById(Long.parseLong(basketId))
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "invalid product ID"));
+
+            return session;
         }
         catch (NumberFormatException e){
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "invalid product ID");
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "invalid basket ID");
         }
     }
 }

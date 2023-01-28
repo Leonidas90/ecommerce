@@ -73,6 +73,11 @@ public class UserService {
         }
     }
 
+    public User createGuestUser(){
+        User user = new User();
+        return usersRepository.save(user);
+    }
+
     private Address getAddress(SignUpDto dto){
         Optional<Address> address = addressService.findAddress(dto.address().address(), dto.address().city(), dto.address().telephone());
         return (address.isPresent() ? address.get() : addressConverter.convert(dto));

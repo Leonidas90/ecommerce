@@ -1,22 +1,21 @@
 package com.example.ecommerce.controller;
 
-import com.example.ecommerce.dto.shopping.ItemFromBox;
-import com.example.ecommerce.dto.shopping.PutItemIntoBoxDto;
-import com.example.ecommerce.dto.shopping.RemoveItemFromBoxDto;
+import com.example.ecommerce.dto.shopping.*;
 import com.example.ecommerce.service.ShoppingSessionService;
+import com.example.ecommerce.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/box")
+@RequestMapping("/api/basket")
 public class ShoppingController {
-
     private final ShoppingSessionService service;
+    private final UserService userService;
 
-    public ShoppingController(ShoppingSessionService service) {
+    public ShoppingController(ShoppingSessionService service, UserService userService) {
         this.service = service;
+        this.userService = userService;
     }
 
     @PostMapping("addProduct")
@@ -24,13 +23,18 @@ public class ShoppingController {
         service.addProduct(dto);
     }
 
+    @PostMapping("init")
+    public InitBasketResponse initBasket(@RequestBody InitBasketDto dto){
+        return service.initBasket(dto);
+    }
+
     @PostMapping("removeProduct")
     public void addProduct(@RequestBody RemoveItemFromBoxDto dto){
         service.removeProduct(dto);
     }
 
-    @GetMapping("getbox")
-    public List<ItemFromBox> getBox(@RequestParam Long userId){
-        return new ArrayList<>();
+    @GetMapping("get")
+    public List<ItemFromBox> getBox(@RequestParam String basketid){
+        return service.getProductsFromBasket(basketid);
     }
 }
