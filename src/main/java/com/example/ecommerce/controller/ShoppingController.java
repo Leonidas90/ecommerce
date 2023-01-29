@@ -28,7 +28,7 @@ public class ShoppingController {
         return service.initBasket(dto);
     }
 
-    @PostMapping("removeProduct")
+    @DeleteMapping("removeProduct")
     public void addProduct(@RequestBody RemoveItemFromBoxDto dto){
         service.removeProduct(dto);
     }

@@ -27,13 +27,14 @@ public class ProductService {
     private final ProductDtoToEntity productDtoToEntity;
 
     private final ProductRepository productRepository;
-    private final CategoryRepository categoryRepository;
 
-    public ProductService(OpinionDtoToEntity opinionDtoToEntity, ProductDtoToEntity productDtoToEntity, ProductRepository productRepository, CategoryRepository categoryRepository) {
+    private final CategoryService categoryService;
+
+    public ProductService(OpinionDtoToEntity opinionDtoToEntity, ProductDtoToEntity productDtoToEntity, ProductRepository productRepository, CategoryService categoryService) {
         this.opinionDtoToEntity = opinionDtoToEntity;
         this.productDtoToEntity = productDtoToEntity;
         this.productRepository = productRepository;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryService;
     }
 
     public List<ProductDTO> getFromCategory(String category){
@@ -42,23 +43,15 @@ public class ProductService {
     }
 
     public void addProduct(AddProductDto dto){
-        Optional<Category> category = categoryRepository.findByName(dto.category());
+        Category category = categoryService.getCategory(dto.category());
         Product product = productDtoToEntity.convert(dto);
-        if (category.isEmpty()){
-            Category newCategory = new Category();
-            newCategory.setName(dto.category());
-            product.setCategory(newCategory);
-        }
-        else{
-            product.setCategory(category.get());
-        }
-
+        product.setCategory(category);
         productRepository.save(product);
     }
 
     public void addOpinion(OpinionDtoRequest dto){
         try {
-            Product product = getProduct(dto.prodId());
+            Product product = getProduct(dto.prodid());
             Opinion opinion = opinionDtoToEntity.convert(dto);
             product.addOpinion(opinion);
             productRepository.save(product);
@@ -81,7 +74,7 @@ public class ProductService {
         return opinions;
     }
 
-    Product getProduct(String productId){
+    public Product getProduct(String productId){
         try {
             Long id = Long.parseLong(productId);
             return productRepository.findById(id)
@@ -90,5 +83,10 @@ public class ProductService {
         catch (NumberFormatException e){
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid product id");
         }
+    }
+
+    public List<Product> getProductsFromCategory(String categoryId){
+        List<Product> products = productRepository.findByCategory(categoryService.getCategory(categoryId));
+        return products;
     }
 }

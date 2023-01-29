@@ -14,11 +14,15 @@ public class Discount {
     @GeneratedValue
     private Long id;
     private String name;
-    private String description;
     private Double percentage;
     private Boolean active;
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name="discountId")
     private List<Product> products = new ArrayList<>();
+
+    public void addProduct(Product product){
+        product.setDiscount(this);
+        products.add(product);
+    }
 }

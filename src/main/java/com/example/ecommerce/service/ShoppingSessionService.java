@@ -1,9 +1,9 @@
 package com.example.ecommerce.service;
 
+import com.example.ecommerce.converter.DiscountEntityToDto;
 import com.example.ecommerce.dto.shopping.*;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.entity.ShoppingSession;
-import com.example.ecommerce.entity.User;
 import com.example.ecommerce.repository.ShoppingSessionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -19,11 +19,13 @@ public class ShoppingSessionService {
     private final ShoppingSessionRepository sessionRepository;
     private final UserService userService;
     private final ProductService productService;
+    private final DiscountEntityToDto discountEntityToDto;
 
-    public ShoppingSessionService(ShoppingSessionRepository sessionRepository, UserService userService, ProductService productService) {
+    public ShoppingSessionService(ShoppingSessionRepository sessionRepository, UserService userService, ProductService productService, DiscountEntityToDto discountEntityToDto) {
         this.sessionRepository = sessionRepository;
         this.userService = userService;
         this.productService = productService;
+        this.discountEntityToDto = discountEntityToDto;
     }
 
     @Transactional
@@ -56,7 +58,8 @@ public class ShoppingSessionService {
             return new ItemFromBox(
                     item.getProduct().getName(),
                     item.getProduct().getPrice(),
-                    item.getQuantity());
+                    item.getQuantity(),
+                    discountEntityToDto.convert(item.getProduct().getDiscount()));
         }).collect(Collectors.toList());
         return products;
     }

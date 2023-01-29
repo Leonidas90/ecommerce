@@ -15,6 +15,11 @@ public class ShoppingSession {
     @Id
     @GeneratedValue
     private Long id;
+    private double total;
+
+    @OneToOne
+    @JoinColumn(name="userId", referencedColumnName = "id", updatable = false, insertable = true)
+    private User user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="session", orphanRemoval = true)
     private List<CartItem> items = new ArrayList<>();
@@ -31,6 +36,8 @@ public class ShoppingSession {
             item.setSession(this);
             items.add(item);
         }
+
+        this.total = calculateTotal();
     }
 
     public void removeItem(Product product){
@@ -47,6 +54,13 @@ public class ShoppingSession {
 
     private boolean isProductPresent(Product product){
         return items.stream().filter(obj -> obj.getProduct().getId() == product.getId()).findFirst().isPresent();
+    }
+
+    private double calculateTotal(){
+        Double sum = items.stream()
+                .mapToDouble(item -> item.getProduct().getPrice() * item.getQuantity())
+                .sum();
+        return sum;
     }
 
 }

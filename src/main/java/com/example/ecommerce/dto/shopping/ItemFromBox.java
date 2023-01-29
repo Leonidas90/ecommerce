@@ -1,4 +1,7 @@
 package com.example.ecommerce.dto.shopping;
 
-public record ItemFromBox(String name, Double price, Integer units) {
+import com.example.ecommerce.dto.discount.DiscountDto;
+import com.example.ecommerce.entity.Discount;
+
+public record ItemFromBox(String name, Double price, Integer units, DiscountDto discount) {
 }
