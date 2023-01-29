@@ -1,4 +1,4 @@
 package com.example.ecommerce.dto.category;
 
-public record CategoryCreateResponseDto(String status) {
+public record CategoryCreateResponseDto(String categoryid) {
 }

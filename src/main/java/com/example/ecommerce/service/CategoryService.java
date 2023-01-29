@@ -1,6 +1,5 @@
 package com.example.ecommerce.service;
 
-import com.example.ecommerce.converter.CategoryDtoToEntityConverter;
 import com.example.ecommerce.converter.CategoryEntityToDtoConverter;
 import com.example.ecommerce.converter.ProductDtoToEntity;
 import com.example.ecommerce.converter.ProductEntitytoDto;
@@ -27,23 +26,24 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ProductDtoToEntity productDtoToEntity;
     private final ProductEntitytoDto productEntitytoDto;
-    private final CategoryDtoToEntityConverter dtoToEntityConverter;
     private final CategoryEntityToDtoConverter entityToDtoConverter;
 
-    public CategoryService(CategoryRepository categoryRepository, ProductDtoToEntity productDtoToEntity, ProductEntitytoDto productEntitytoDto, CategoryDtoToEntityConverter dtoToEntityConverter, CategoryEntityToDtoConverter entityToDtoConverter) {
+    public CategoryService(CategoryRepository categoryRepository, ProductDtoToEntity productDtoToEntity, ProductEntitytoDto productEntitytoDto, CategoryEntityToDtoConverter entityToDtoConverter) {
         this.categoryRepository = categoryRepository;
         this.productDtoToEntity = productDtoToEntity;
         this.productEntitytoDto = productEntitytoDto;
-        this.dtoToEntityConverter = dtoToEntityConverter;
         this.entityToDtoConverter = entityToDtoConverter;
     }
 
-    public void create(CategoryDto dto){
-        Optional<Category> category = categoryRepository.findByName(dto.name());
-        if (category.isPresent()){
+    public CategoryCreateResponseDto create(String name){
+        if (categoryRepository.findByName(name).isPresent()){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "category already exist");
         }
-        categoryRepository.save(dtoToEntityConverter.convert(dto));
+
+        Category category = new Category();
+        category.setName(name);
+        Category entity = categoryRepository.save(category);
+        return new CategoryCreateResponseDto(entity.getId().toString());
     }
 
     public void addProduct(AddProductDto dto){
@@ -57,13 +57,9 @@ public class CategoryService {
         categoryRepository.save(category);
     }
 
-    public List<ProductDTO> getProductsFromCategory(String categoryName){
-        Optional<Category> category = categoryRepository.findByName(categoryName);
-        if (category.isEmpty()){
-            return new ArrayList<>();
-        }
-
-        List<ProductDTO> products = category.get().getProducts().stream()
+    public List<ProductDTO> getProductsFromCategory(String categoryId){
+        Category category = getCategory(categoryId);
+        List<ProductDTO> products = category.getProducts().stream()
                 .map((product -> productEntitytoDto.convert(product)))
                 .collect(Collectors.toList());
 
@@ -86,8 +82,14 @@ public class CategoryService {
         return (existed != null);
     }
 
-    private Category getCategory(String name){
-        return categoryRepository.findByName(name)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "category not found"));
+    public Category getCategory(String categoryId){
+        try {
+            Long id = Long.parseLong(categoryId);
+            return categoryRepository.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "product not found"));
+        }
+        catch (NumberFormatException e){
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Invalid product id");
+        }
     }
 }

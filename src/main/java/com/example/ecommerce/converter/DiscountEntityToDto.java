@@ -12,6 +12,6 @@ public class DiscountEntityToDto implements Converter<Discount, DiscountDto> {
         if (source == null){
             return null;
         }
-        return new DiscountDto(source.getName(), source.getPercentage(), source.getActive());
+        return new DiscountDto(source.getId().toString(), source.getName(), source.getPercentage(), source.getActive());
     }
 }

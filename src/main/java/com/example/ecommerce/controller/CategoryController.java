@@ -18,14 +18,14 @@ public class CategoryController {
     @Autowired
     CategoryService service;
 
-    @GetMapping("list")
-    public CategoryListResponseDto list(){
+    @GetMapping("all")
+    public CategoryListResponseDto get(){
         return service.getAll();
     }
 
     @PostMapping("create")
-    public void create(@RequestParam String name, @RequestParam String desc){
-        service.create(new CategoryDto(name, desc));
+    public CategoryCreateResponseDto create(@RequestParam String name){
+        return service.create(name);
     }
 
     @GetMapping("products")

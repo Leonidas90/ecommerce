@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class CategoryEntityToDtoConverter implements Converter<Category, CategoryDto>{
     @Override
     public CategoryDto convert(Category source) {
-        CategoryDto dto = new CategoryDto(source.getName(), source.getDescription());
+        CategoryDto dto = new CategoryDto(source.getId().toString(), source.getName());
         return dto;
     }
 }
