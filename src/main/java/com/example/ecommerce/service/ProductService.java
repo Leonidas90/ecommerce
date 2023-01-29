@@ -51,7 +51,7 @@ public class ProductService {
 
     public void addOpinion(OpinionDtoRequest dto){
         try {
-            Product product = getProduct(dto.prodid());
+            Product product = getProduct(dto.productid());
             Opinion opinion = opinionDtoToEntity.convert(dto);
             product.addOpinion(opinion);
             productRepository.save(product);

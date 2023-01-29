@@ -32,6 +32,9 @@ public class Product {
     @OneToOne(mappedBy = "product")
     private CartItem cartItem;
 
+    @OneToOne(mappedBy = "product")
+    private OrderItem orderItem;
+
     public void addOpinion(Opinion opinion){
         this.opinions.add(opinion);
         opinion.setProduct(this);
