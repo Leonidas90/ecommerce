@@ -10,27 +10,27 @@ import java.util.Optional;
 
 @Data
 @Entity
-@Table(name="shopping_sessions")
-public class ShoppingSession {
+@Table(name="baskets")
+public class Basket {
     @Id
     @GeneratedValue
     private Long id;
     private double total;
 
-    @OneToOne
-    @JoinColumn(name="userId", referencedColumnName = "id", updatable = false, insertable = true)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="userId", updatable = true, insertable = true)
     private User user;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="session", orphanRemoval = true)
-    private List<CartItem> items = new ArrayList<>();
+    private List<BasketItem> items = new ArrayList<>();
 
     public void addProduct(Product product, Integer quantity){
         if (isProductPresent(product)){
-            CartItem item = getItem(product);
+            BasketItem item = getItem(product);
             item.setQuantity(quantity + item.getQuantity());
         }
         else{
-            CartItem item = new CartItem();
+            BasketItem item = new BasketItem();
             item.setProduct(product);
             item.setQuantity(quantity);
             item.setSession(this);
@@ -40,12 +40,16 @@ public class ShoppingSession {
         this.total = calculateTotal();
     }
 
+    public void addUser(User user){
+        this.user = user;
+    }
+
     public void removeItem(Product product){
         items.remove(getItem(product));
     }
 
-    private CartItem getItem(Product product){
-        Optional<CartItem> item = items.stream().filter(obj -> obj.getProduct().getId() == product.getId()).findFirst();
+    private BasketItem getItem(Product product){
+        Optional<BasketItem> item = items.stream().filter(obj -> obj.getProduct().getId() == product.getId()).findFirst();
         if (item.isEmpty()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "product not found");
         }

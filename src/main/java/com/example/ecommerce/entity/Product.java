@@ -30,7 +30,7 @@ public class Product {
     private List<Opinion> opinions = new ArrayList<>();
 
     @OneToOne(mappedBy = "product")
-    private CartItem cartItem;
+    private BasketItem basketItem;
 
     @OneToOne(mappedBy = "product")
     private OrderItem orderItem;

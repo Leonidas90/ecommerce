@@ -19,9 +19,6 @@ public class User {
     private String password;
     private String type = "normal";
 
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    private ShoppingSession shoppingSession;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy="user", orphanRemoval = true)
     private List<OrderDetails> orders = new ArrayList<>();
 

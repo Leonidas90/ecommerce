@@ -3,6 +3,7 @@ package com.example.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +14,8 @@ public class OrderDetails {
     @Id
     @GeneratedValue
     private Long id;
+    double total;
+    Date created;
 
     @ManyToOne
     @JoinColumn(name="user_id", updatable = true, insertable = true)

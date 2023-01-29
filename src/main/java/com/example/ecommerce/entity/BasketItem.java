@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name="cart_items")
-public class CartItem {
+@Table(name="basket_items")
+public class BasketItem {
     @Id
     @GeneratedValue
     private Long id;
@@ -18,5 +18,5 @@ public class CartItem {
 
     @ManyToOne
     @JoinColumn(name="session_id", updatable = true, insertable = true)
-    private ShoppingSession session;
+    private Basket session;
 }

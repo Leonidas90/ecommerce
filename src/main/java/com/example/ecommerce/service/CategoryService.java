@@ -47,7 +47,7 @@ public class CategoryService {
     }
 
     public void addProduct(AddProductDto dto){
-        Category category = getCategory(dto.category());
+        Category category = getCategory(dto.categoryid());
         if (checkIfProductExist(dto, category)){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "product already exist");
         }

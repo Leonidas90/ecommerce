@@ -43,7 +43,7 @@ public class ProductService {
     }
 
     public void addProduct(AddProductDto dto){
-        Category category = categoryService.getCategory(dto.category());
+        Category category = categoryService.getCategory(dto.categoryid());
         Product product = productDtoToEntity.convert(dto);
         product.setCategory(category);
         productRepository.save(product);

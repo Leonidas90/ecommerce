@@ -34,6 +34,12 @@ public class UserService {
         admin.setLastName("admin");
         admin.setPassword("admin");
         admin.setType("admin");
+        Address address = new Address();
+        address.setAddress("34 Street");
+        address.setCity("NY");
+        address.setTelephone("123456789");
+        address.setCountry("USA");
+        admin.setAddress(address);
         usersRepository.save(admin);
     }
 
