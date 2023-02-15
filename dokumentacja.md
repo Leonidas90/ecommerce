@@ -61,7 +61,8 @@
             if weekday_name == dzien_tygodnia:
                 product_value += dzien["value"]
         return product_value
-
+* Przykładowy wykres
+![](https://github.com/Leonidas90/ecommerce/blob/78da0a02e12db506bca8bee426e6fbb61486e5e9/produkty_dni_tyg.png)
 ### Uzyskaj wartość produktu dla danego wieku klienta
 
 ### Funkcja ta oblicza całkowitą wartość sprzedaży dla danego przedziału wiekowego.
