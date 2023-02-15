@@ -1,5 +1,11 @@
 ECommerce project Java Spring Boot + JPA & Angular & MySQL
 
+Build & deploy:
+Easiest way to run project is to use Intelij IDE
+
+SwaggerUI:
+http://localhost:8080/swagger-ui/index.html
+
 Requirments:
 To compile and run project JAVA SKD18 is required
 
