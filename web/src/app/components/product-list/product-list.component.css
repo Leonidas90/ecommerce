@@ -1,0 +1,23 @@
+.headline{
+margin-top: 20px;
+margin-bottom: 15px;
+text-align: center;
+color: rgb(58, 92, 155);
+font-size:35px;
+}
+
+.tableprimary{
+background-color: rgb(144, 179, 246);
+text-align: center;
+font-size: 18px;
+}
+
+.tableIn{
+text-align: center;
+font-size: medium;
+}
+
+.name{
+text-align: left;
+padding-left: 60px;
+}

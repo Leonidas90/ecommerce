@@ -1,0 +1,17 @@
+<div class="detail-section">
+    <div class="container-fluid">
+
+        <div class="productimage" style="margin-top:140px;margin-left:80px"></div>
+
+        <h3 style="margin-top:20px;margin-left:50px">{{ product.name }}</h3>
+        <div class="price" style="margin-top:20px;margin-left:50px">{{ product.unitPrice | currency:'PLN '}}</div>
+        <button (click)="addToCart()" class="btn btn-primary btn-sm" style="margin-top:20px;margin-left:50px">Dodaj do koszyka</button>
+
+        <hr>
+        <h4 style="margin-left:50px">Opis</h4>
+        <p style="margin-left:50px;margin-right:150px;font-size:large">{{ product.description }}</p>
+
+        <a routerLink="/products" class="mt-5" id="decoration" style="margin-left:50px;">Powrót do listy produktów</a>
+    </div>
+</div>
+

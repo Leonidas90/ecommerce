@@ -1,0 +1,62 @@
+<div class="main-content">
+    <div class="section-content section-content-p30">
+        <div class="container-fluid">
+
+            <div *ngIf="cartItems.length > 0">
+
+                <table class="table table-bordered">
+                    <tr>
+                        <th width="20%">Zdjęcie produktu</th>
+                        <th width="50%">Opis produktu</th>
+                        <th width="30%"></th>
+                    </tr>
+
+                    <tr *ngFor="let tempCartItem of cartItems">
+                        <td>
+                            <div class="productimage"></div>
+                        </td>
+                        <td>
+                            <p>{{ tempCartItem.name }}</p>
+                            <p>{{ tempCartItem.unitPrice | currency:'PLN ' }}</p>
+                        </td>
+                        <td>
+                            <label>Ilość:</label>
+                            <div class="items">
+                                <div class="col" style="float:left;">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                                <div class="col ml-4 mr-2" style="float:left;margin-left:40px;">
+                                    {{ tempCartItem.quantity }}
+                                </div>
+                                <div class="col" style="float:left;margin-left:40px;">
+                                    <button class="btn btn-primary btn-sm">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                                <div class="col-8"></div>
+                            </div>
+                                <br>
+                            <p class="mt-2">Suma: {{ tempCartItem.quantity * tempCartItem.unitPrice | currency:'PLN ' }}
+                            </p>
+                        </td>
+                    </tr>
+                    <td colspan="2"></td>
+                    <td style="font-weight:bold">
+                        <p>Ilość: {{ totalQuantity }}</p>
+                        <p>Wysyłka: 10 PLN</p>
+                        <p>Suma: {{ totalPrice + 10 | currency:'PLN ' }}</p>
+                        <a routerLink="/checkout" class="btn btn-primary">Przejdź dalej</a>
+                    </td>
+                    <tr>
+
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div *ngIf="cartItems.length == 0" class="alert alert-warning col-md-12" role="alert">
+            Twój koszyk jest pusty.
+        </div>
+    </div>
+</div>
